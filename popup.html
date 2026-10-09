@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>NSIS Premium OSAGO</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h3>Проверка ОСАГО в НСИС</h3>
+
+    <div class="form-group">
+      <label for="searchType">Искать по:</label>
+      <select id="searchType">
+        <option value="vin">VIN-коду</option>
+        <option value="regNumber">Гос. номеру</option>
+        <option value="bodyNumber">Номеру кузова</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="queryInput">Значение:</label>
+      <input type="text" id="queryInput" placeholder="Введите данные">
+    </div>
+
+    <div class="captcha-container">
+      <div class="captcha-img-box">
+        <img id="captchaImg" alt="Капча" src="">
+        <button id="refreshCaptchaBtn" title="Обновить"></button>
+      </div>
+      <input type="text" id="captchaInput" placeholder="Код с картинки" maxlength="8">
+      <button id="recognizeCaptchaBtn" style="margin-top: 8px; background-color: #10b981; font-size: 12px; padding: 8px;">
+        🔍 Распознать капчу
+      </button>
+    </div>
+
+    <button id="searchBtn">Проверить полис</button>
+
+    <div id="loader" class="hidden"> Связь с базой НСИС...</div>
+    <div id="result" class="hidden"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

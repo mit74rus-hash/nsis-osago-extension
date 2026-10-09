@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "NSIS Premium OSAGO",
+  "version": "6.1",
+  "description": "Premium look check OSAGO directly via NSIS.",
+  "permissions": ["scripting", "activeTab", "tabs"],
+  "host_permissions": ["https://*.nsis.ru/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Проверка ОСАГО НСИС"
+  }
+}

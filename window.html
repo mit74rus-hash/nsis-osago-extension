@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Проверка ОСАГО НСИС</title>
+  <link rel="stylesheet" href="window.css">
+  <!-- Подключаем библиотеку Tesseract для распознавания прямо из CDN -->
+  <script src="https://jsdelivr.net"></script>
+</head>
+<body>
+  <div class="container">
+    <h3>NSIS Premium OSAGO</h3>
+    
+    <div class="form-group">
+      <label for="searchType">Искать по:</label>
+      <select id="searchType">
+        <option value="vin">VIN-коду</option>
+        <option value="regNumber">Гос. номеру</option>
+        <option value="bodyNumber">Номеру кузова</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="queryInput">Значение:</label>
+      <input type="text" id="queryInput" placeholder="Введите данные для поиска">
+    </div>
+
+    <div class="captcha-container">
+      <label>Капча:</label>
+      <div class="captcha-img-box">
+        <img id="captchaImg" src="" alt="Загрузка капчи...">
+        <button id="refreshCaptchaBtn" title="Обновить капчу">🔄</button>
+      </div>
+      <input type="text" id="captchaInput" placeholder="Код с картинки">
+    </div>
+
+    <button id="recognizeCaptchaBtn" style="margin-bottom: 10px; background-color: #475569;">🔍 Распознать капчу</button>
+    <button id="searchBtn">Проверить полис</button>
+
+    <div id="loader" class="hidden">Связь с базой НСИС... Пожалуйста, подождите.</div>
+    <div id="result" class="hidden"></div>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="checker.js"></script>
+  <script src="window.js"></script>
+</body>
+</html>
