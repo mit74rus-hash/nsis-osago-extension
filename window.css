@@ -164,8 +164,23 @@ button:hover {
 .status-indicator.active {
   width: 8px;
   height: 8px;
-  background-color: #10b981;
+  background-color: #10b981; /* Зеленый */
   border-radius: 50%;
+}
+/* ДОБАВЬ ЭТИ СТРОКИ НИЖЕ: */
+.status-indicator.pending {
+  width: 8px;
+  height: 8px;
+  background-color: #f59e0b; /* Желтый для не начавшихся */
+  border-radius: 50%;
+}
+.status-indicator.expired {
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444; /* Красный для закрытых */
+  border-radius: 50%;
+}
+
 }
 .status-text {
   font-size: 12px;
