@@ -8,17 +8,24 @@ function safeAddListener(id, event, handler) {
 
 document.addEventListener('DOMContentLoaded', initExtension);
 safeAddListener('refreshCaptchaBtn', 'click', triggerSiteCaptchaRefresh);
+
+// ИСПРАВЛЕНО: Кнопка теперь четко получает текст и вставляет в поле ввода
 safeAddListener('recognizeCaptchaBtn', 'click', async () => {
   const captchaInput = document.getElementById('captchaInput');
   const loader = document.getElementById('loader');
+  
   if (loader) loader.classList.remove('hidden');
+  showResult("🔍 Распознаю капчу...", "info");
+  
   const recognized = await recognizeCaptcha();
+  
   if (loader) loader.classList.add('hidden');
+  
   if (recognized && captchaInput) {
-    captchaInput.value = recognized;
+    captchaInput.value = recognized; // Вставляем цифры в поле
     showResult(`✅ Капча распознана: <b>${recognized}</b>`, "success");
   } else {
-    showResult("❌ Не удалось распознать. Введите вручную.", "error");
+    showResult("❌ Не удалось распознать. Введите вручную или обновите.", "error");
   }
 });
 safeAddListener('searchBtn', 'click', handleSearch);
@@ -95,23 +102,20 @@ async function triggerSiteCaptchaRefresh() {
   }
 }
 
-// ИСПРАВЛЕНО: Добавлен await перед Tesseract.createWorker
+// ИСПРАВЛЕНО: Добавлен обязательный return, возвращающий текст наружу
 async function recognizeCaptcha() {
   try {
     const captchaImg = document.getElementById('captchaImg');
     if (!captchaImg || !captchaImg.src || captchaImg.src.startsWith('data:image/svg+xml')) return null;
     
-    const worker = await Tesseract.createWorker('eng');
-    await worker.setParameters({
-      tessedit_char_whitelist: '0123456789',
+    const result = await Tesseract.recognize(captchaImg.src, 'eng', {
+      tessedit_char_whitelist: '0123456789'
     });
-    
-    const result = await worker.recognize(captchaImg.src);
-    await worker.terminate();
     
     const recognized = result.data.text.replace(/[^0-9]/g, '').trim();
     console.log('Распознанная цифровая капча:', recognized);
-    return recognized || null;
+    
+    return recognized || null; // Отдаем распознанные цифры
   } catch (error) {
     console.error('Ошибка распознавания капчи:', error);
     return null;
@@ -136,7 +140,11 @@ async function handleSearch() {
       return;
     }
     
-    if (resultDiv) resultDiv.classList.add('hidden');
+    if (resultDiv) {
+      resultDiv.innerHTML = '';
+      resultDiv.classList.add('hidden');
+    }
+    
     if (loader) loader.classList.remove('hidden');
 
     if (!captchaWord) {
@@ -163,6 +171,9 @@ async function handleSearch() {
       target: { tabId: tab.id },
       args: [searchType, queryValue, captchaWord],
       func: (type, value, captcha) => {
+        const oldSiteResults = document.querySelector('.result-container, [class*="result"], table');
+        if (oldSiteResults) oldSiteResults.remove();
+
         const simulateKeyboardType = (input, text) => {
           if (!input) return;
           input.focus();
@@ -200,7 +211,7 @@ async function handleSearch() {
             submitBtn.focus();
             submitBtn.click();
           }
-        }, 500);
+        }, 600);
       }
     }, () => {
       if (chrome.runtime.lastError) {

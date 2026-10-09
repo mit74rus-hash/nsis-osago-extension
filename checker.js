@@ -1,5 +1,5 @@
 function waitForResult(tabId, loader, attempts = 0) {
-  const maxAttempts = 30;
+  const maxAttempts = 40; // Немного увеличим время ожидания для медленной базы
   const delay = 500;
   
   if (attempts >= maxAttempts) {
@@ -16,6 +16,7 @@ function waitForResult(tabId, loader, attempts = 0) {
         const modal = document.querySelector('[class*="modal"], [class*="dialog"], [role="dialog"]');
         const modalText = modal ? modal.innerText : '';
         
+        // Проверяем ошибки сервера
         if (modalText.includes("попробуйте еще раз") || bodyText.includes("попробуйте еще раз") ||
             modalText.includes("попробуйте ещё раз") || bodyText.includes("попробуйте ещё раз")) {
           return { status: "server_error", message: "Сервер НСИС перегружен" };
@@ -26,9 +27,15 @@ function waitForResult(tabId, loader, attempts = 0) {
         if (bodyText.includes("Неверный код") || bodyText.includes("Капча введена неверно") || bodyText.includes("неверно")) {
           return { status: "captcha_error" };
         }
-        if (bodyText.includes("Данные о полисах ОСАГО") || bodyText.includes("Статус договора") || bodyText.includes("Серия полиса")) {
-          return { status: "success", text: document.body.innerText };
+        
+        // ИСПРАВЛЕНИЕ: Ищем конкретно блок карточек результатов на сайте, чтобы убедиться, что они обновились
+        const hasResultCards = document.querySelector('.result-container, [class*="Card"], [class*="Result"]');
+        
+        if (hasResultCards && (bodyText.includes("Данные о полисах ОСАГО") || bodyText.includes("Статус договора"))) {
+          // Забираем текст именно из нового контейнера результатов, чтобы отсечь мусор страницы
+          return { status: "success", text: hasResultCards.innerText || bodyText };
         }
+        
         if (bodyText.includes("не найден") || bodyText.includes("Полис отсутствует") || bodyText.includes("Ничего не найдено")) {
           return { status: "not_found" };
         }
@@ -45,7 +52,7 @@ function waitForResult(tabId, loader, attempts = 0) {
           case "captcha_error":
             if (loader) loader.classList.add('hidden');
             showResult("❌ Неверный код капчи! Картинка обновлена.", "error");
-            initExtension();
+            initExtension(); // Перечитываем новую капчу
             break;
           case "server_error":
           case "server_busy":
